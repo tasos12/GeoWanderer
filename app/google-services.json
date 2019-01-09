@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "597163310278",
+    "firebase_url": "https://geotraveller-222312.firebaseio.com",
+    "project_id": "geotraveller-222312",
+    "storage_bucket": "geotraveller-222312.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:597163310278:android:6d2c7fc81cb7a603",
+        "android_client_info": {
+          "package_name": "com.monk.geotraveler"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "597163310278-iuahg1obtj733bn72gat1fa9e00e9rb7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.monk.geotraveler",
+            "certificate_hash": "8c9783a5c8a6f11886c6e5a77ad99fa81a19172b"
+          }
+        },
+        {
+          "client_id": "597163310278-4v5r4crv8023huos6eidads1rtnenb9g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyChWRC78up7TfjMhnyCO6XO-A_AzMzqVjc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "597163310278-4v5r4crv8023huos6eidads1rtnenb9g.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
