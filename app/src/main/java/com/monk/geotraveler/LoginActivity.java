@@ -24,6 +24,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -64,6 +65,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true); //offline firebase capabilitiesir
         mAuth = FirebaseAuth.getInstance();
 
         //Check for Location Permission

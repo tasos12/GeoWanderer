@@ -85,13 +85,12 @@ public class MainScreen extends AppCompatActivity
         barGmailNameText.setText(mFirebaseUser.getDisplayName());
         barGmailText.setText(mFirebaseUser.getEmail());
 
-        //Google Maps Fragment
-        mGoogleMapFragment = (GoogleMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-
         //Firebase database
-        FirebaseDatabase.getInstance().setPersistenceEnabled(true); //offline firebase capabilities
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mDatabase.child("users").child(mFirebaseUser.getUid()).addListenerForSingleValueEvent(getUserListener());
+
+        //Google Maps Fragment
+        mGoogleMapFragment = (GoogleMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
 
     }
 
