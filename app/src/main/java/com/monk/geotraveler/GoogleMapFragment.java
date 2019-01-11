@@ -150,7 +150,7 @@ public class GoogleMapFragment extends Fragment
 
     private void startLocationUpdates() {
         LocationListener locationListener = new MyLocationListener();
-        mLocationManager.requestLocationUpdates(getBestProvider(), 100, 1, locationListener);
+        mLocationManager.requestLocationUpdates(getBestProvider(), 100, 0, locationListener);
     }
 
     public void updateUserInfo(User user){
