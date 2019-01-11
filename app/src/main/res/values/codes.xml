@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="SIGN_OUT">1000</integer>
+    <integer name="UPDATE_USER_INFO_DB">2000</integer>
+    <integer name="UPDATE_USER_HOME_DB">3000</integer>
+    <integer name="RC_SIGN_IN">5808</integer>
+    <integer name="LOGIN_SCREEN">5708</integer>
+</resources>
