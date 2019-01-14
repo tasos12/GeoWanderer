@@ -7,10 +7,12 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -20,6 +22,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,6 +44,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -74,10 +81,6 @@ public class MainScreen extends AppCompatActivity
         Intent intent = getIntent();
         mFirebaseUser = (FirebaseUser) intent.getExtras().get("ACC_INFO");
 
-        //Changing welcome message
-        TextView contentScreenWelcomeMessage = findViewById(R.id.contentScreenWelcomeMessage);
-        contentScreenWelcomeMessage.setText("Welcome " + mFirebaseUser.getDisplayName());
-
         //Changing user info at navigation view
         View header = navigationView.getHeaderView(0);
         TextView barGmailNameText = header.findViewById(R.id.barGmailNameText);
@@ -88,10 +91,10 @@ public class MainScreen extends AppCompatActivity
         //Firebase database
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mDatabase.child("users").child(mFirebaseUser.getUid()).addListenerForSingleValueEvent(getUserListener());
+        //mDatabase.child("memories").child(mFirebaseUser.getUid()).addListenerForSingleValueEvent(getUserMemoriesListener());
 
         //Google Maps Fragment
         mGoogleMapFragment = (GoogleMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-
     }
 
     @Override
@@ -113,7 +116,7 @@ public class MainScreen extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
+        if (id == R.id.reset_home_setting) {
             mUser.setHomeLocation(-1, -1);
             mGoogleMapFragment.updateUserHomeInfoDB(mUser);
             mGoogleMapFragment.updateUserHomeView(mUser);
@@ -125,7 +128,6 @@ public class MainScreen extends AppCompatActivity
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
         int id = item.getItemId();
 
         if (id == R.id.sign_out) {
@@ -143,9 +145,12 @@ public class MainScreen extends AppCompatActivity
         if(code == getResources().getInteger(R.integer.UPDATE_USER_INFO_DB)){
             UserDataUpdaterAsync dataUpdater = new UserDataUpdaterAsync(data);
             dataUpdater.execute();
-        } else if(code == getResources().getInteger(R.integer.UPDATE_USER_HOME_DB)){
+        } else if(code == getResources().getInteger(R.integer.UPDATE_USER_HOME_DB)) {
             UserHomeUpdaterAsync homeUpdater = new UserHomeUpdaterAsync(data);
             homeUpdater.execute();
+        } else if(code == getResources().getInteger(R.integer.UPDATE_MEMORIES_DB)){
+            UserMemoriesUpdaterAsync memoriesUpdater = new UserMemoriesUpdaterAsync(data);
+            memoriesUpdater.execute();
         }
     }
 
@@ -153,7 +158,6 @@ public class MainScreen extends AppCompatActivity
         ValueEventListener userListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.d(TAG, "onDataChange: Data updated");
                 if(dataSnapshot.exists()) {     //If user exists in database
                     Log.d(TAG, "onDataChange: User Exists");
                     mUser = dataSnapshot.getValue(User.class);
@@ -161,7 +165,7 @@ public class MainScreen extends AppCompatActivity
                 else{
                     Log.d(TAG, "onDataChange: User does not exist");
                     mUser = new User(0, 0, 0);
-                    writeNewUser(mFirebaseUser.getUid(), mUser);
+                    writeUsertoDB(mFirebaseUser.getUid(), mUser);
                 }
                 mGoogleMapFragment.updateUserInfo(mUser);
                 mGoogleMapFragment.updateUserHomeView(mUser);
@@ -175,7 +179,34 @@ public class MainScreen extends AppCompatActivity
         return userListener;
     }
 
-    private void writeNewUser(String userID, User user){
+    /*private ValueEventListener getUserMemoriesListener(){
+        ValueEventListener memoriesListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                mMemoriesList = new ArrayList<MemoryFence>();
+                if(dataSnapshot.exists()) {
+                    if(dataSnapshot.hasChildren()) {
+                        Iterable list = dataSnapshot.getChildren();
+                        mMemoriesList = new ArrayList<MemoryFence>();
+                        while(list.iterator().hasNext()){
+                            mMemoriesList.add((MemoryFence) list.iterator().next());
+                        }
+                    }
+                }
+                else{
+                    Log.d(TAG, "Memories don't exist in DB");
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
+            }
+        };
+        return memoriesListener;
+    }*/
+
+    private void writeUsertoDB(String userID, User user){
         mDatabase.child("users").child(userID).setValue(user);
     }
 
@@ -193,7 +224,7 @@ public class MainScreen extends AppCompatActivity
             float maxDistance = (float) data.get("maxDistance");
             float totalDistance = (float) data.get("totalDistance");
             mUser.setUserInfo(maxDistanceToday, maxDistance, totalDistance);
-            writeNewUser(mFirebaseUser.getUid(), mUser);
+            writeUsertoDB(mFirebaseUser.getUid(), mUser);
 
             return null;
         }
@@ -218,7 +249,7 @@ public class MainScreen extends AppCompatActivity
             double latitude = data.getDouble("homeLatitude");
             double longitude = data.getDouble("homeLongitude");
             mUser.setHomeLocation(latitude, longitude);
-            writeNewUser(mFirebaseUser.getUid(), mUser);
+            writeUsertoDB(mFirebaseUser.getUid(), mUser);
 
             return null;
         }
@@ -230,4 +261,31 @@ public class MainScreen extends AppCompatActivity
         }
     }
 
+    private class UserMemoriesUpdaterAsync  extends AsyncTask<Void, Void, Void>{
+
+        Bundle data;
+
+        public UserMemoriesUpdaterAsync(Bundle data){
+            this.data = data;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            Log.d(TAG, "Memories Updated ");
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            double latitude = data.getDouble("latitude");
+            double longitude = data.getDouble("longitude");;
+            String id = data.getString("id");
+            String description = data.getString("description");
+            mDatabase.child("memories").child(mFirebaseUser.getUid()).child(id).child("id").setValue(latitude);
+            mDatabase.child("memories").child(mFirebaseUser.getUid()).child(id).child("latitude").setValue(latitude);
+            mDatabase.child("memories").child(mFirebaseUser.getUid()).child(id).child("longitude").setValue(longitude);
+            mDatabase.child("memories").child(mFirebaseUser.getUid()).child(id).child("description").setValue(description);
+            return null;
+        }
+    }
 }

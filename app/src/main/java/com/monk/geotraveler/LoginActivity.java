@@ -43,6 +43,9 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_screen);
 
+        //FirebaseDatabase.getInstance().setPersistenceEnabled(true); //offline firebase capabilities
+        mAuth = FirebaseAuth.getInstance();
+
         // Configure sign-in to request the user's ID, email address, and basic
         // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -53,10 +56,6 @@ public class LoginActivity extends AppCompatActivity {
         // Build a GoogleSignInClient with the options specified by gso.
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
-        // Check for existing Google Sign In account, if the user is already signed in
-        // the GoogleSignInAccount will be non-null.
-       // GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
-
         mSignInButton = findViewById(R.id.signInBtn);
         mSignInButton.setSize(SignInButton.SIZE_STANDARD);
         mSignInButton.setOnClickListener(new View.OnClickListener() {
@@ -65,12 +64,9 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        FirebaseDatabase.getInstance().setPersistenceEnabled(true); //offline firebase capabilitiesir
-        mAuth = FirebaseAuth.getInstance();
-
         //Check for Location Permission
         if(!checkLocationPermission())
-            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+            ActivityCompat.requestPermissions(this,  new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
 
         //Connect instantly if connected previously
         updateUI(mAuth.getCurrentUser());

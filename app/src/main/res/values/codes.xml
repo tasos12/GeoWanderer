@@ -5,4 +5,6 @@
     <integer name="UPDATE_USER_HOME_DB">3000</integer>
     <integer name="RC_SIGN_IN">5808</integer>
     <integer name="LOGIN_SCREEN">5708</integer>
+    <integer name="CREATE_MEMORY">5601</integer>
+    <integer name="UPDATE_MEMORIES_DB">1001</integer>
 </resources>
