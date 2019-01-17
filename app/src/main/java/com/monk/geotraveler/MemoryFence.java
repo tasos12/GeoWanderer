@@ -14,6 +14,23 @@ public class MemoryFence {
     private String id, description;
     private double latitude, longitude;
 
+    public MemoryFence(){}
+
+    public MemoryFence(String id, String description, double latitude, double longitude){
+        this.id = id;
+        this.description = description;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        mGeofence = new Geofence.Builder()
+                .setRequestId(id)
+                .setCircularRegion(latitude, longitude, 50)
+                .setExpirationDuration(Geofence.NEVER_EXPIRE)
+                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER | Geofence.GEOFENCE_TRANSITION_DWELL)
+                .setLoiteringDelay(1000)
+                .build();
+        Log.d(TAG, "MemoryFence: ");
+    }
+
     public MemoryFence(String id, String description, LatLng point){
         this.id = id;
         this.description = description;

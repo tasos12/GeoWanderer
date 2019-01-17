@@ -210,7 +210,6 @@ public class GoogleMapFragment extends Fragment
                 });
     }
 
-
     private MarkerOptions getMarkerOptions(LatLng latLng, String title ,float markerColor){
         MarkerOptions marker = new MarkerOptions();
         marker.title(title);
@@ -249,7 +248,6 @@ public class GoogleMapFragment extends Fragment
 
     public void updateUserInfo(User user){
         mUser = user;
-        //mDistanceTotalTxt.setText(Float.toString(user.getDistanceTotalValue()));
         mDistanceMaxTodayTxt.setText(Float.toString(user.getDistanceMaxTodayValue()));
         mDistanceMaxTxt.setText(Float.toString(user.getDistanceMaxValue()));
     }
@@ -276,7 +274,6 @@ public class GoogleMapFragment extends Fragment
         Bundle data = new Bundle();
         data.putFloat("maxDistanceToday", user.getDistanceMaxTodayValue());
         data.putFloat("maxDistance", user.getDistanceMaxValue());
-        data.putFloat("totalDistance", user.getDistanceTotalValue());
         mCallback.onUserValueChange(getResources().getInteger(R.integer.UPDATE_USER_INFO_DB), data);
     }
 
@@ -319,8 +316,10 @@ public class GoogleMapFragment extends Fragment
                 if(mUser.getDistanceMaxValue() < distance){
                     mUser.setDistanceMaxValue(distance);
                 }
-                updateUserInfo(mUser);
-                updateUserInfoDB(mUser);
+                if(isAdded()) { //checks if fragment is attached  to activity(temp solution)
+                    updateUserInfo(mUser);
+                    updateUserInfoDB(mUser);
+                }
             }
         }
 

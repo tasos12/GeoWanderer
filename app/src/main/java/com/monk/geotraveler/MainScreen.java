@@ -42,6 +42,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -91,7 +92,7 @@ public class MainScreen extends AppCompatActivity
         //Firebase database
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mDatabase.child("users").child(mFirebaseUser.getUid()).addListenerForSingleValueEvent(getUserListener());
-        //mDatabase.child("memories").child(mFirebaseUser.getUid()).addListenerForSingleValueEvent(getUserMemoriesListener());
+        mDatabase.child("memories").child(mFirebaseUser.getUid()).addListenerForSingleValueEvent(getUserMemoriesListener());
 
         //Google Maps Fragment
         mGoogleMapFragment = (GoogleMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
@@ -164,7 +165,7 @@ public class MainScreen extends AppCompatActivity
                 }
                 else{
                     Log.d(TAG, "onDataChange: User does not exist");
-                    mUser = new User(0, 0, 0);
+                    mUser = new User(0, 0);
                     writeUsertoDB(mFirebaseUser.getUid(), mUser);
                 }
                 mGoogleMapFragment.updateUserInfo(mUser);
@@ -179,22 +180,21 @@ public class MainScreen extends AppCompatActivity
         return userListener;
     }
 
-    /*private ValueEventListener getUserMemoriesListener(){
+    private ValueEventListener getUserMemoriesListener(){
         ValueEventListener memoriesListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                mMemoriesList = new ArrayList<MemoryFence>();
-                if(dataSnapshot.exists()) {
-                    if(dataSnapshot.hasChildren()) {
-                        Iterable list = dataSnapshot.getChildren();
-                        mMemoriesList = new ArrayList<MemoryFence>();
-                        while(list.iterator().hasNext()){
-                            mMemoriesList.add((MemoryFence) list.iterator().next());
-                        }
+                if(dataSnapshot.exists()) {     //If user exists in database
+                    Log.d(TAG, "onDataChange: Memories Exists");
+                    Iterable<DataSnapshot> tempMemoryList = dataSnapshot.getChildren();
+                    while(tempMemoryList.iterator().hasNext()){
+                        MemoryFence  tempMemFence = tempMemoryList.iterator().next().getValue(MemoryFence.class);
+                        LatLng tempLatLng = new LatLng(tempMemFence.getLatitude(), tempMemFence.getLongitude());
+                        mGoogleMapFragment.updateUserMemoriesView(tempMemFence.getId(), tempMemFence.getDescription(), tempLatLng);
                     }
                 }
                 else{
-                    Log.d(TAG, "Memories don't exist in DB");
+                    Log.d(TAG, "onDataChange: User does not exist");
                 }
             }
 
@@ -204,7 +204,7 @@ public class MainScreen extends AppCompatActivity
             }
         };
         return memoriesListener;
-    }*/
+    }
 
     private void writeUsertoDB(String userID, User user){
         mDatabase.child("users").child(userID).setValue(user);
@@ -222,8 +222,7 @@ public class MainScreen extends AppCompatActivity
         protected Void doInBackground(Void... voids) {
             float maxDistanceToday = (float) data.get("maxDistanceToday");
             float maxDistance = (float) data.get("maxDistance");
-            float totalDistance = (float) data.get("totalDistance");
-            mUser.setUserInfo(maxDistanceToday, maxDistance, totalDistance);
+            mUser.setUserInfo(maxDistanceToday, maxDistance);
             writeUsertoDB(mFirebaseUser.getUid(), mUser);
 
             return null;
@@ -281,7 +280,7 @@ public class MainScreen extends AppCompatActivity
             double longitude = data.getDouble("longitude");;
             String id = data.getString("id");
             String description = data.getString("description");
-            mDatabase.child("memories").child(mFirebaseUser.getUid()).child(id).child("id").setValue(latitude);
+            mDatabase.child("memories").child(mFirebaseUser.getUid()).child(id).child("id").setValue(id);
             mDatabase.child("memories").child(mFirebaseUser.getUid()).child(id).child("latitude").setValue(latitude);
             mDatabase.child("memories").child(mFirebaseUser.getUid()).child(id).child("longitude").setValue(longitude);
             mDatabase.child("memories").child(mFirebaseUser.getUid()).child(id).child("description").setValue(description);

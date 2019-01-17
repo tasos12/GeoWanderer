@@ -6,7 +6,6 @@ import java.util.Map;
 public class User {
 
     private float mDistanceMaxTodayValue = 0;
-    private float mDistanceTotalValue = 0;
     private float mDistanceMaxValue = 0;
     private double mHomeLatitude = -1;
     private double mHomeLongitude = -1;
@@ -15,9 +14,8 @@ public class User {
 
     }
 
-    public User(float maxDistanceToday , float maxDistance, float totalDistance){
+    public User(float maxDistanceToday , float maxDistance){
         mDistanceMaxTodayValue = maxDistanceToday;
-        mDistanceTotalValue = totalDistance;
         mDistanceMaxValue = maxDistance;
     }
 
@@ -26,7 +24,6 @@ public class User {
 
         result.put("maxDistance", mDistanceMaxValue);
         result.put("maxDistanceToday", mDistanceMaxTodayValue);
-        result.put("totalDistance", mDistanceTotalValue);
 
         return result;
     }
@@ -36,9 +33,8 @@ public class User {
         setHomeLatitude(latitude);
     }
 
-    public void setUserInfo(float maxDistanceToday , float maxDistance, float totalDistance){
+    public void setUserInfo(float maxDistanceToday , float maxDistance){
         mDistanceMaxTodayValue = maxDistanceToday;
-        mDistanceTotalValue = totalDistance;
         mDistanceMaxValue = maxDistance;
     }
 
@@ -48,14 +44,6 @@ public class User {
 
     public void setDistanceMaxTodayValue(float mDistanceMaxTodayValue) {
         this.mDistanceMaxTodayValue = mDistanceMaxTodayValue;
-    }
-
-    public float getDistanceTotalValue() {
-        return mDistanceTotalValue;
-    }
-
-    public void setDistanceTotalValue(float mDistanceTotalValue) {
-        this.mDistanceTotalValue = mDistanceTotalValue;
     }
 
     public float getDistanceMaxValue() {
